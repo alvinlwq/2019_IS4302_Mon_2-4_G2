@@ -1,0 +1,23 @@
+---------- Beneficiary ---------------
+Name: Lions Home for the Elders
+Add: Bishan Home 9 Bishan Street 13 Singapore 579804
+Phone: 6252 9900
+
+---------- Charity --------------
+*Name: Touch Community Services*
+Add: Blk 162 Bukit Merah Central #05-3545 Singapore 150162
+Phone: 6377 0122
+
+---------- Donor ----------
+Email: albert@gmail.com
+Balance: 10000
+
+---------- Regulator ----------
+Description: Commissioner of Charities
+Add: 140 Hill Street Level 2 Singapore 179369
+Phone: 6337 6597
+
+Donor - 3001
+Regulator - 3002
+Charity - 3003
+Beneficiary - 3000

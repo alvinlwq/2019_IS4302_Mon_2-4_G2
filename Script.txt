@@ -1,0 +1,299 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* global getAssetRegistry */
+
+/**
+ * Submit request to become a beneficiary
+ * @param  {org.hyperledger_composer.project.SubmitBeneficiaryRequest} args - the submit request transaction
+ * @transaction
+ */
+async function submitBeneficiaryRequest(args) {   // eslint-disable-line no-unused-vars
+  	try {      
+        let factory = await getFactory();
+        let request = await factory.newResource('org.hyperledger_composer.project', 'BeneficiaryRequest', args.requestId);
+
+        request.description = getCurrentParticipant().description;
+      	request.beneficiary = getCurrentParticipant();
+
+        let requestRegistry = await getAssetRegistry('org.hyperledger_composer.project.BeneficiaryRequest');
+        return requestRegistry.add(request);
+    } catch(exception) {
+        throw new Error("Unable to create new request");
+    }
+}
+
+/**
+ * Regulator approves beneficiary's request to be certified 
+ * @param  {org.hyperledger_composer.project.ApproveBeneficiaryRequest} args - the approve request transaction
+ * @transaction
+ */
+async function approveBeneficiaryRequest(args) {   // eslint-disable-line no-unused-vars
+  	try {
+      	args.request.status = "APPROVED";
+      	args.request.beneficiary.status = "CERTIFIED";
+      
+      	let requestRegistry = await getAssetRegistry('org.hyperledger_composer.project.BeneficiaryRequest');
+    		await requestRegistry.update(args.request);
+      	let beneficiaryRegistry = await getParticipantRegistry('org.hyperledger_composer.project.Beneficiary');
+    		await beneficiaryRegistry.update(args.request.beneficiary);
+    } catch(exception) {
+        throw new Error("Unable to approve request");
+    }
+}
+
+/**
+ * Regulator denies beneficiary's request to be certified 
+ * @param  {org.hyperledger_composer.project.DenyBeneficiaryRequest} args - the deny request transaction
+ * @transaction
+ */
+async function denyBeneficiaryRequest(args) {   // eslint-disable-line no-unused-vars
+  	try {
+      	args.request.status = "DENIED";
+      	args.request.beneficiary.status = "UNCERTIFIED";
+
+	let requestRegistry = await getAssetRegistry('org.hyperledger_composer.project.BeneficiaryRequest');
+    		await requestRegistry.update(args.request);
+      	let beneficiaryRegistry = await getParticipantRegistry('org.hyperledger_composer.project.Beneficiary');
+    		await beneficiaryRegistry.update(args.request.beneficiary);
+    } catch(exception) {
+        throw new Error("Unable to deny request");
+    }
+}
+
+/**
+ * Submit request to become a charity
+ * @param  {org.hyperledger_composer.project.SubmitCharityRequest} args - the submit request transaction
+ * @transaction
+ */
+async function submitCharityRequest(args) {   // eslint-disable-line no-unused-vars
+  	try {      
+        let factory = await getFactory();
+        let request = await factory.newResource('org.hyperledger_composer.project', 'CharityRequest', args.requestId);
+
+        request.description = getCurrentParticipant().description;
+      	request.charity = getCurrentParticipant();
+
+        let requestRegistry = await getAssetRegistry('org.hyperledger_composer.project.CharityRequest');
+        return requestRegistry.add(request);
+    } catch(exception) {
+        throw new Error("Unable to create new request");
+    }
+}
+
+/**
+ * Regulator approves charity's request to be certified 
+ * @param  {org.hyperledger_composer.project.ApproveCharityRequest} args - the approve request transaction
+ * @transaction
+ */
+async function approveCharityRequest(args) {   // eslint-disable-line no-unused-vars
+  	try {
+      	args.request.status = "APPROVED";
+      	args.request.charity.status = "CERTIFIED";
+      
+      	let requestRegistry = await getAssetRegistry('org.hyperledger_composer.project.CharityRequest');
+    		await requestRegistry.update(args.request);
+      	let charityRegistry = await getParticipantRegistry('org.hyperledger_composer.project.Charity');
+    		await charityRegistry.update(args.request.charity);
+    } catch(exception) {
+        throw new Error("Unable to approve request");
+    }
+}
+
+/**
+ * Regulator denies charity's request to be certified 
+ * @param  {org.hyperledger_composer.project.DenyCharityRequest} args - the deny request transaction
+ * @transaction
+ */
+async function denyCharityRequest(args) {   // eslint-disable-line no-unused-vars
+  	try {
+      	args.request.status = "DENIED";
+      	args.request.charity.status = "UNCERTIFIED";
+
+	let requestRegistry = await getAssetRegistry('org.hyperledger_composer.project.CharityRequest');
+    		await requestRegistry.update(args.request);
+      	let charityRegistry = await getParticipantRegistry('org.hyperledger_composer.project.Charity');
+    		await charityRegistry.update(args.request.charity);
+    } catch(exception) {
+        throw new Error("Unable to deny request");
+    }
+}
+
+/**
+ * Create a new fund event
+ * @param  {org.hyperledger_composer.project.CreateFundEvent} args - the create new fund event transaction
+ * @transaction
+ */
+async function createFundEvent(args) {   // eslint-disable-line no-unused-vars
+  
+  	try {
+        let factory = await getFactory();
+        let fundEvent = await factory.newResource('org.hyperledger_composer.project', 'FundEvent', args.eventId);
+
+        fundEvent.targetAmount = args.targetAmount;
+        fundEvent.deadline = args.deadline;
+        fundEvent.charity = getCurrentParticipant();
+      	fundEvent.beneficiary = args.beneficiary;
+
+        let fundEventRegistry = await getAssetRegistry('org.hyperledger_composer.project.FundEvent');
+        return fundEventRegistry.add(fundEvent);
+    } catch(exception) {
+        throw new Error("Unable to create new fund event");
+    }
+}
+
+/**
+ * Update fund event's deadline
+ * @param  {org.hyperledger_composer.project.UpdateDeadline} args - the update deadline transaction
+ * @transaction
+ */
+async function updateDeadline(args) {   // eslint-disable-line no-unused-vars
+  	try {
+        args.fundEvent.deadline = args.newDeadline;
+    	let fundEventRegistry = await getAssetRegistry('org.hyperledger_composer.project.FundEvent');
+    	await fundEventRegistry.update(args.fundEvent);
+    } catch(exception) {
+        throw new Error("Unable to update the fund event's deadline");
+    }
+}
+
+/**
+ * Update fund event's target amount
+ * @param  {org.hyperledger_composer.project.UpdateTargetAmount} args - the update target amount transaction
+ * @transaction
+ */
+async function updateTarget(args) {   // eslint-disable-line no-unused-vars
+  	try {
+        args.fundEvent.targetAmount = args.newTarget;
+    	let fundEventRegistry = await getAssetRegistry('org.hyperledger_composer.project.FundEvent');
+    	await fundEventRegistry.update(args.fundEvent);
+    } catch(exception) {
+        throw new Error("Unable to update the fund event's target amount");
+    }
+}
+
+/**
+ * Update fund event's status
+ * @param  {org.hyperledger_composer.project.UpdateEventStatus} args - the update event status transaction
+ * @transaction
+ */
+async function updateEventStatus(args) {   // eslint-disable-line no-unused-vars
+  	try {
+        args.fundEvent.status = args.newStatus;
+    	let fundEventRegistry = await getAssetRegistry('org.hyperledger_composer.project.FundEvent');
+    	await fundEventRegistry.update(args.fundEvent);
+    } catch(exception) {
+        throw new Error("Unable to update the fund event's status");
+    }
+}
+
+/**
+ * Make a donation to a fund event
+ * @param  {org.hyperledger_composer.project.DonateTo} args - the make a donation transaction
+ * @transaction
+ */
+async function donateTo(args) {   // eslint-disable-line no-unused-vars
+  	let donor = await getCurrentParticipant();
+  	if (donor.balance < args.amount) {
+          throw new Error("Insufficient balance");
+        }
+  	else {
+      try { 
+        let factory = await getFactory();
+        let donation = await factory.newResource('org.hyperledger_composer.project', 'Donation', args.referenceCode);
+
+        donation.amount = args.amount;
+        donation.donor = getCurrentParticipant();
+        donation.fundEvent = args.fundEvent;
+
+        let donationRegistry = await getAssetRegistry('org.hyperledger_composer.project.Donation');
+        return donationRegistry.add(donation);
+    } catch(exception) {
+        throw new Error("Unable to make new donation");
+    }
+    }
+}
+
+/**
+ * Charity confirms that it has received the donation
+ * @param  {org.hyperledger_composer.project.ConfirmDonation} args - the confirm donation transaction
+ * @transaction
+ */
+async function confirmDonation(args) {   // eslint-disable-line no-unused-vars
+  	try {
+      	args.donation.status = "RECEIVED";
+      	args.donation.donor.balance -= args.donation.amount;
+      	args.donation.fundEvent.amountCollected += args.donation.amount; 
+      
+      	let donationRegistry = await getAssetRegistry('org.hyperledger_composer.project.Donation');
+    	await donationRegistry.update(args.donation);
+      	let donorRegistry = await getParticipantRegistry('org.hyperledger_composer.project.Donor');
+    	await donorRegistry.update(args.donation.donor);
+      	let fundEventRegistry = await getAssetRegistry('org.hyperledger_composer.project.FundEvent');
+    	await fundEventRegistry.update(args.donation.fundEvent);
+    } catch(exception) {
+        throw new Error("Unable to confirm donation");
+    }
+}
+
+/**
+ * Transfer funds from a fund event to the target beneficiary
+ * @param  {org.hyperledger_composer.project.TransferFunds} args - the transfer funds transaction
+ * @transaction
+ */
+async function transferFunds(args) {   // eslint-disable-line no-unused-vars
+  	if (args.amount > args.fundEvent.amountCollected) {
+      throw new Error("Not enough funds collected");
+    }
+     else {
+      try {
+        	let factory = await getFactory();
+            let transfer = await factory.newResource('org.hyperledger_composer.project', 'Transfer', args.referenceCode);
+
+            transfer.amount = args.amount;
+            transfer.fundEvent = args.fundEvent;
+
+            let transferRegistry = await getAssetRegistry('org.hyperledger_composer.project.Transfer');
+            return transferRegistry.add(transfer);
+      }
+      catch(exception) {
+        throw new Error("Unable to transfer funds");
+    }
+    } 
+}
+
+/**
+ * Beneficiary confirms that it has received the transfer of funds
+ * @param  {org.hyperledger_composer.project.ConfirmTransfer} args - the confirm transfer transaction
+ * @transaction
+ */
+async function confirmTransfer(args) {   // eslint-disable-line no-unused-vars
+  	try {
+      	args.transfer.status = "RECEIVED";
+      	args.transfer.fundEvent.amountTransferred += args.transfer.amount;
+      	let beneficiary = await getCurrentParticipant();
+      	beneficiary.balance += args.transfer.amount; 
+      
+      	let fundEventRegistry = await getAssetRegistry('org.hyperledger_composer.project.FundEvent');
+        await fundEventRegistry.update(args.transfer.fundEvent);
+        let beneficiaryRegistry = await getParticipantRegistry('org.hyperledger_composer.project.Beneficiary');
+        await beneficiaryRegistry.update(beneficiary);
+      	let transferRegistry = await getAssetRegistry('org.hyperledger_composer.project.Transfer');
+        await transferRegistry.update(args.transfer);
+    } catch(exception) {
+        throw(exception);
+    }
+}
+
+

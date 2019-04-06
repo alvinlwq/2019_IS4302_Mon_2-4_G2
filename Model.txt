@@ -1,0 +1,196 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ 
+/**
+ * Defines a data model for charity donations project
+ */
+namespace org.hyperledger_composer.project
+
+enum EventStatus {
+  o OPEN 
+  o CLOSED
+}
+
+enum RequestStatus {
+  o PENDING
+  o APPROVED
+  o DENIED
+}
+
+enum DonationStatus {
+  o PENDING
+  o RECEIVED
+  o REJECTED
+}
+
+enum TransferStatus {
+  o PENDING
+  o RECEIVED
+  o REJECTED
+}
+
+enum CertifiedStatus {
+  o UNCERTIFIED
+  o PENDING
+  o CERTIFIED
+}
+
+concept Address {
+  o String house
+  o String street
+  o String postcode
+  o String city
+  o String country
+}
+
+asset FundEvent identified by eventId {
+  o String eventId
+  o Double targetAmount 
+  o Double amountCollected default = 0.0
+  o Double amountTransferred default = 0.0
+  o String deadline
+  o EventStatus status default = "OPEN"
+  --> Charity charity
+  --> Beneficiary beneficiary
+}
+  
+asset DonorListing identified by listingId {
+  o String listingId
+  o Donation[] donations optional
+  --> FundEvent fundEvent
+}
+  
+asset Donation identified by referenceCode {
+  o String referenceCode
+  o Double amount
+  o DonationStatus status default = "PENDING"
+  --> Donor donor
+  --> FundEvent fundEvent
+}
+  
+asset Transfer identified by referenceCode {
+  o String referenceCode
+  o Double amount
+  o TransferStatus status default = "PENDING"
+  --> FundEvent fundEvent
+}
+
+abstract asset RequestToBeCertified identified by requestId {
+  o String requestId
+  o String description
+  o RequestStatus status default = "PENDING"
+}
+  
+asset BeneficiaryRequest extends RequestToBeCertified {
+  --> Beneficiary beneficiary
+}
+  
+asset CharityRequest extends RequestToBeCertified {
+  --> Charity charity
+}
+  
+abstract participant Entity identified by id {
+  o String id
+  o String description
+  o Address address
+  o String phoneNumber
+}
+
+participant Charity extends Entity {
+  o CertifiedStatus status default = "PENDING"
+}
+
+participant Beneficiary extends Entity {
+  o Double balance
+  o CertifiedStatus status default = "PENDING"
+}
+  
+participant Regulator extends Entity {
+  
+}
+
+participant Donor identified by email {
+  o String email
+  o String name optional
+  o Address address optional
+  o Double balance
+}
+  
+transaction SubmitBeneficiaryRequest {
+  o String requestId
+}
+  
+transaction ApproveBeneficiaryRequest {
+  --> BeneficiaryRequest request
+}
+  
+transaction DenyBeneficiaryRequest {
+  --> BeneficiaryRequest request
+}
+  
+transaction SubmitCharityRequest {
+  o String requestId
+}
+  
+transaction ApproveCharityRequest {
+  --> CharityRequest request
+}
+  
+transaction DenyCharityRequest {
+  --> CharityRequest request
+}
+  
+transaction CreateFundEvent {
+  o String eventId
+  o Double targetAmount
+  o String deadline
+  --> Beneficiary beneficiary
+}
+
+transaction UpdateDeadline {
+  --> FundEvent fundEvent
+  o String newDeadline
+}
+  
+transaction UpdateTargetAmount {
+  --> FundEvent fundEvent
+  o Double newTarget
+}
+  
+transaction UpdateEventStatus {
+  --> FundEvent fundEvent
+  o String newStatus
+}
+  
+// Creates new Donation asset
+transaction DonateTo {  
+  --> FundEvent fundEvent
+  o Double amount
+  o String referenceCode
+}
+  
+transaction ConfirmDonation {
+  --> Donation donation
+}
+  
+//Creates new Transfer asset
+transaction TransferFunds {
+  --> FundEvent fundEvent
+  o Double amount
+  o String referenceCode
+}
+  
+transaction ConfirmTransfer {
+  --> Transfer transfer
+}

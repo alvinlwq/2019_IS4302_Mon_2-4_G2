@@ -1,0 +1,498 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Sample access control list.
+ */
+
+rule OnlyBeneficiaryCanSubmitRequest {
+  	description: "Only beneficiary can execute SubmitBeneficiaryRequest() transaction"
+  	participant: "org.hyperledger_composer.project.Beneficiary"
+  	operation: CREATE
+  	resource: "org.hyperledger_composer.project.SubmitBeneficiaryRequest"
+  	action: ALLOW
+}
+
+rule OnlyBeneficiaryCanCreateRequest {
+  	description: "Only beneficiary can create a request through the SubmitBeneficiaryRequest() transaction"
+  	participant: "org.hyperledger_composer.project.Beneficiary"
+  	operation: CREATE
+  	resource: "org.hyperledger_composer.project.BeneficiaryRequest"
+  	transaction: "org.hyperledger_composer.project.SubmitBeneficiaryRequest"
+  	action: ALLOW
+}
+
+rule BeneficiaryCanReadRequest {
+  	description: "Beneficiary and regulator can read a certification request"
+  	participant (p): "org.hyperledger_composer.project.Beneficiary"
+  	operation: READ
+  	resource (r): "org.hyperledger_composer.project.BeneficiaryRequest"
+  	condition: ("p.getIdentifier() == r.beneficiary.getIdentifier()")
+  	action: ALLOW
+}
+
+rule RegulatorCanReadBeneficiaryRequest {
+  	description: "Beneficiary and regulator can read a certification request"
+  	participant: "org.hyperledger_composer.project.Regulator"
+  	operation: READ
+  	resource: "org.hyperledger_composer.project.BeneficiaryRequest"
+  	action: ALLOW
+}
+
+rule RegulatorCanReadBeneficiary {
+  	description: "Regulator can see the registry of beneficiaries"
+  	participant: "org.hyperledger_composer.project.Regulator"
+  	operation: READ
+  	resource: "org.hyperledger_composer.project.Beneficiary"
+  	action: ALLOW
+}
+
+rule RegulatorCanApproveBeneficiaryRequest {
+  	description: "Only regulator can approve a certification request"
+  	participant: "org.hyperledger_composer.project.Regulator"
+  	operation: CREATE
+  	resource: "org.hyperledger_composer.project.ApproveBeneficiaryRequest"
+  	action: ALLOW
+}
+
+rule RegulatorCanDenyBeneficiaryRequest {
+  	description: "Only regulator can deny a certification request"
+  	participant: "org.hyperledger_composer.project.Regulator"
+  	operation: CREATE
+  	resource: "org.hyperledger_composer.project.DenyBeneficiaryRequest"
+  	action: ALLOW
+}
+
+rule RegulatorCanUpdateBeneficiary {
+  	description: "Regulator can update the registry of beneficiaries, but only through the ApproveBeneficiaryRequest() or DenyBeneficiaryRequest() transactions"
+  	participant: "org.hyperledger_composer.project.Regulator"
+  	operation: UPDATE
+  	resource: "org.hyperledger_composer.project.Beneficiary"
+  	transaction: "org.hyperledger_composer.project.ApproveBeneficiaryRequest"
+  	action: ALLOW
+}
+
+rule RegulatorCanUpdateBeneficiary2 {
+  	description: "Regulator can update the registry of beneficiaries, but only through the ApproveBeneficiaryRequest() or DenyBeneficiaryRequest() transactions"
+  	participant: "org.hyperledger_composer.project.Regulator"
+  	operation: UPDATE
+  	resource: "org.hyperledger_composer.project.Beneficiary"
+  	transaction: "org.hyperledger_composer.project.DenyBeneficiaryRequest"
+  	action: ALLOW
+}
+
+rule RegulatorCanUpdateBeneficiaryRequest {
+  	description: "Regulator can update certification requests, but only through the ApproveBeneficiaryRequest() or DenyBeneficiaryRequest() transactions"
+  	participant: "org.hyperledger_composer.project.Regulator"
+  	operation: UPDATE
+  	resource: "org.hyperledger_composer.project.BeneficiaryRequest"
+  	transaction: "org.hyperledger_composer.project.ApproveBeneficiaryRequest"
+  	action: ALLOW
+}
+
+rule RegulatorCanUpdateBeneficiaryRequest2 {
+  	description: "Regulator can update certification requests, but only through the ApproveBeneficiaryRequest() or DenyBeneficiaryRequest() transactions"
+  	participant: "org.hyperledger_composer.project.Regulator"
+  	operation: UPDATE
+  	resource: "org.hyperledger_composer.project.BeneficiaryRequest"
+  	transaction: "org.hyperledger_composer.project.DenyBeneficiaryRequest"
+  	action: ALLOW
+}
+
+rule OnlyCharityCanSubmitRequest {
+  	description: "Only charity can execute SubmitCharityRequest() transaction"
+  	participant: "org.hyperledger_composer.project.Charity"
+  	operation: CREATE
+  	resource: "org.hyperledger_composer.project.SubmitCharityRequest"
+  	action: ALLOW
+}
+
+rule OnlyCharityCanCreateRequest {
+  	description: "Only charity can create a request through the SubmitCharityRequest() transaction"
+  	participant: "org.hyperledger_composer.project.Charity"
+  	operation: CREATE
+  	resource: "org.hyperledger_composer.project.CharityRequest"
+  	transaction: "org.hyperledger_composer.project.SubmitCharityRequest"
+  	action: ALLOW
+}
+
+rule CharityCanReadRequest {
+  	description: "Charity and regulator can read a certification request"
+  	participant (p): "org.hyperledger_composer.project.Charity"
+  	operation: READ
+  	resource (r): "org.hyperledger_composer.project.CharityRequest"
+  	condition: ("p.getIdentifier() == r.charity.getIdentifier()")
+  	action: ALLOW
+}
+
+rule RegulatorCanReadCharityRequest {
+  	description: "Charity and regulator can read a certification request"
+  	participant: "org.hyperledger_composer.project.Regulator"
+  	operation: READ
+  	resource: "org.hyperledger_composer.project.CharityRequest"
+  	action: ALLOW
+}
+
+rule RegulatorCanReadCharity {
+  	description: "Regulator can see the registry of charities"
+  	participant: "org.hyperledger_composer.project.Regulator"
+  	operation: READ
+  	resource: "org.hyperledger_composer.project.Charity"
+  	action: ALLOW
+}
+
+rule RegulatorCanApproveCharityRequest {
+  	description: "Only regulator can approve a charity certification request"
+  	participant: "org.hyperledger_composer.project.Regulator"
+  	operation: CREATE
+  	resource: "org.hyperledger_composer.project.ApproveCharityRequest"
+  	action: ALLOW
+}
+
+rule RegulatorCanDenyCharityRequest {
+  	description: "Only regulator can deny a charity certification request"
+  	participant: "org.hyperledger_composer.project.Regulator"
+  	operation: CREATE
+  	resource: "org.hyperledger_composer.project.DenyCharityRequest"
+  	action: ALLOW
+}
+
+rule RegulatorCanUpdateCharity {
+  	description: "Regulator can update the registry of charities, but only through the ApproveCharityRequest() or DenyCharityRequest() transactions"
+  	participant: "org.hyperledger_composer.project.Regulator"
+  	operation: UPDATE
+  	resource: "org.hyperledger_composer.project.Charity"
+  	transaction: "org.hyperledger_composer.project.ApproveCharityRequest"
+  	action: ALLOW
+}
+
+rule RegulatorCanUpdateCharity2 {
+  	description: "Regulator can update the registry of charities, but only through the ApproveCharityRequest() or DenyCharityRequest() transactions"
+  	participant: "org.hyperledger_composer.project.Regulator"
+  	operation: UPDATE
+  	resource: "org.hyperledger_composer.project.Charity"
+  	transaction: "org.hyperledger_composer.project.DenyCharityRequest"
+  	action: ALLOW
+}
+
+rule RegulatorCanUpdateCharityRequest {
+  	description: "Regulator can update certification requests, but only through the ApproveCharityRequest() or DenyCharityRequest() transactions"
+  	participant: "org.hyperledger_composer.project.Regulator"
+  	operation: UPDATE
+  	resource: "org.hyperledger_composer.project.CharityRequest"
+  	transaction: "org.hyperledger_composer.project.ApproveCharityRequest"
+  	action: ALLOW
+}
+
+rule RegulatorCanUpdateCharityRequest2 {
+  	description: "Regulator can update certification requests, but only through the ApproveCharityRequest() or DenyCharityRequest() transactions"
+  	participant: "org.hyperledger_composer.project.Regulator"
+  	operation: UPDATE
+  	resource: "org.hyperledger_composer.project.CharityRequest"
+  	transaction: "org.hyperledger_composer.project.DenyCharityRequest"
+  	action: ALLOW
+}
+
+rule CharityCanCreateFundEvent {
+  	description: "Only charity can create a new fund event"
+  	participant: "org.hyperledger_composer.project.Charity"
+  	operation: CREATE
+  	resource: "org.hyperledger_composer.project.CreateFundEvent"
+  	action: ALLOW
+}
+
+rule CharityCanCreateFundEvent2 {
+  	description: "Only charity can create a new fund event"
+  	participant: "org.hyperledger_composer.project.Charity"
+  	operation: CREATE
+  	resource: "org.hyperledger_composer.project.FundEvent"
+  	transaction: "org.hyperledger_composer.project.CreateFundEvent"
+  	action: ALLOW
+}
+
+rule CharityCanUpdateDeadline {
+  	description: "Only charity can update fund event details"
+  	participant (p): "org.hyperledger_composer.project.Charity"
+  	operation: UPDATE
+  	resource (r): "org.hyperledger_composer.project.FundEvent"
+  	transaction: "org.hyperledger_composer.project.UpdateDeadline"
+  	condition: (p.getIdentifier() == r.charity.getIdentifier())
+  	action: ALLOW
+}
+
+rule CharityCanUpdateDeadline2 {
+  	description: "Only charity can update fund event details"
+  	participant: "org.hyperledger_composer.project.Charity"
+  	operation: CREATE
+  	resource: "org.hyperledger_composer.project.UpdateDeadline"
+  	action: ALLOW
+}
+
+rule CharityCanUpdateTargetAmount {
+  	description: "Only charity can update fund event details"
+  	participant (p): "org.hyperledger_composer.project.Charity"
+  	operation: UPDATE
+  	resource (r): "org.hyperledger_composer.project.FundEvent"
+  	transaction: "org.hyperledger_composer.project.UpdateTargetAmount"
+  	condition: (p.getIdentifier() == r.charity.getIdentifier())
+  	action: ALLOW
+}
+
+rule CharityCanUpdateTargetAmount2 {
+  	description: "Only charity can update fund event details"
+  	participant: "org.hyperledger_composer.project.Charity"
+  	operation: CREATE
+  	resource: "org.hyperledger_composer.project.UpdateTargetAmount"
+  	action: ALLOW
+}
+
+rule CharityCanUpdateEventStatus {
+  	description: "Only charity can update fund event details"
+  	participant (p): "org.hyperledger_composer.project.Charity"
+  	operation: UPDATE
+  	resource (r): "org.hyperledger_composer.project.FundEvent"
+  	transaction: "org.hyperledger_composer.project.UpdateEventStatus"
+  	condition: (p.getIdentifier() == r.charity.getIdentifier())
+  	action: ALLOW
+}
+
+rule CharityCanUpdateEventStatus2 {
+  	description: "Only charity can update fund event details"
+  	participant: "org.hyperledger_composer.project.Charity"
+  	operation: CREATE
+  	resource: "org.hyperledger_composer.project.UpdateEventStatus"
+  	action: ALLOW
+}
+
+rule DonorCanDonateTo {
+  	description: "Donor can create DonateTo() transaction"
+  	participant: "org.hyperledger_composer.project.Donor"
+  	operation: CREATE
+  	resource: "org.hyperledger_composer.project.DonateTo"
+  	action: ALLOW
+}
+
+rule DonorCanDonateTo2 {
+  	description: "Donor can create Donation asset through DonateTo() transaction"
+  	participant: "org.hyperledger_composer.project.Donor"
+  	operation: CREATE
+  	resource: "org.hyperledger_composer.project.Donation"
+  	transaction: "org.hyperledger_composer.project.DonateTo"
+  	action: ALLOW
+}
+
+
+rule DonorCanReadDonation {
+  	description: "Donor can read his own donation details only"
+  	participant (p): "org.hyperledger_composer.project.Donor"
+  	operation: READ
+  	resource (r): "org.hyperledger_composer.project.Donation"
+  	condition: (p.getIdentifier() == r.donor.getIdentifier())
+  	action: ALLOW
+}
+
+rule CharityCanReadDonors {
+  	description: "Charity can read donors through ConfirmDonation() transaction only"
+  	participant: "org.hyperledger_composer.project.Charity"
+  	operation: READ
+  	resource: "org.hyperledger_composer.project.Donor"
+  	transaction: "org.hyperledger_composer.project.ConfirmDonation"
+  	action: ALLOW
+}
+
+rule CharityCanReadAllDonations {
+  	description: "Charity can read all donation details"
+  	participant (p): "org.hyperledger_composer.project.Charity"
+  	operation: READ
+  	resource (r): "org.hyperledger_composer.project.Donation"
+  	condition: (p.getIdentifier() == r.fundEvent.charity.getIdentifier())
+  	action: ALLOW
+}
+
+rule CharityCanConfirmDonation {
+  	description: "Charity can create ConfirmDonation() transaction"
+  	participant: "org.hyperledger_composer.project.Charity"
+  	operation: CREATE
+  	resource: "org.hyperledger_composer.project.ConfirmDonation"
+  	action: ALLOW
+}
+
+rule CharityCanConfirmDonation2 {
+  	description: "Charity can update donation status through ConfirmDonation() transaction"
+  	participant (p): "org.hyperledger_composer.project.Charity"
+  	operation: UPDATE
+  	resource (r): "org.hyperledger_composer.project.Donation"
+  	transaction: "org.hyperledger_composer.project.ConfirmDonation"
+  	condition: (p.getIdentifier() == r.fundEvent.charity.getIdentifier())
+  	action: ALLOW
+}
+
+rule CharityCanConfirmDonation3 {
+  	description: "Charity can update donor balance through ConfirmDonation() transaction"
+  	participant: "org.hyperledger_composer.project.Charity"
+  	operation: UPDATE
+  	resource: "org.hyperledger_composer.project.Donor"
+  	transaction: "org.hyperledger_composer.project.ConfirmDonation"
+  	action: ALLOW
+}
+
+rule CharityCanConfirmDonation4 {
+  	description: "Charity can update fund event balance through ConfirmDonation() transaction"
+  	participant (p): "org.hyperledger_composer.project.Charity"
+  	operation: UPDATE
+  	resource (r): "org.hyperledger_composer.project.FundEvent"
+  	transaction: "org.hyperledger_composer.project.ConfirmDonation"
+  	condition: (p.getIdentifier() == r.charity.getIdentifier())
+  	action: ALLOW
+}
+
+rule AllCanReadFundEvent {
+  	description: "All participants can read fund event details"
+  	participant: "ANY"
+  	operation: READ
+  	resource: "org.hyperledger_composer.project.FundEvent"
+  	action: ALLOW
+}
+
+rule AllCanReadCharityDetails {
+  	description: "All participants can read charity details"
+  	participant: "ANY"
+  	operation: READ
+  	resource: "org.hyperledger_composer.project.Charity"
+  	action: ALLOW
+}
+
+rule AllCanReadBeneficiaryDetails {
+  	description: "All can read beneficiary details"
+  	participant: "ANY"
+  	operation: READ
+  	resource: "org.hyperledger_composer.project.Beneficiary"
+  	action: ALLOW
+}
+
+rule OnlyDonorCanReadHisOwnDetails {
+  	description: "Only donor can read his own details"
+  	participant (p): "org.hyperledger_composer.project.Donor"
+  	operation: READ
+  	resource (r): "org.hyperledger_composer.project.Donor"
+  	condition: (p.getIdentifier() == r.getIdentifier())
+  	action: ALLOW
+}
+
+rule OnlyRegulatorCanReadHisOwnDetails {
+  	description: "Only regulator can read his own details"
+  	participant (p): "org.hyperledger_composer.project.Regulator"
+  	operation: READ
+  	resource (r): "org.hyperledger_composer.project.Regulator"
+  	condition: (p.getIdentifier() == r.getIdentifier())
+  	action: ALLOW
+}
+
+rule CharityCanTransferFunds {
+  	description: "Charity can create TransferFunds() transaction"
+  	participant: "org.hyperledger_composer.project.Charity"
+  	operation: CREATE
+  	resource: "org.hyperledger_composer.project.TransferFunds"
+  	action: ALLOW
+}
+
+rule CharityCanTransferFunds2 {
+  	description: "Charity can create Transfer asset through TransferFunds() transaction"
+  	participant: "org.hyperledger_composer.project.Charity"
+  	operation: CREATE
+  	resource: "org.hyperledger_composer.project.Transfer"
+  	transaction: "org.hyperledger_composer.project.TransferFunds"
+  	action: ALLOW
+}
+
+
+rule CharityCanReadTransfer {
+  	description: "Charity can read his own transfer details only"
+  	participant (p): "org.hyperledger_composer.project.Charity"
+  	operation: READ
+  	resource (r): "org.hyperledger_composer.project.Transfer"
+  	condition: (p.getIdentifier() == r.fundEvent.charity.getIdentifier())
+  	action: ALLOW
+}
+
+rule BeneficiaryCanReadTransfer {
+  	description: "Beneficiary can read transfers to him only"
+  	participant (p): "org.hyperledger_composer.project.Beneficiary"
+  	operation: READ
+  	resource (r): "org.hyperledger_composer.project.Transfer"
+  	condition: (p.getIdentifier() == r.fundEvent.beneficiary.getIdentifier())
+  	action: ALLOW
+}
+
+rule BeneficiaryCanConfirmTransfer {
+  	description: "Beneficiary can create ConfirmTransfer() transaction"
+  	participant: "org.hyperledger_composer.project.Beneficiary"
+  	operation: CREATE
+  	resource: "org.hyperledger_composer.project.ConfirmTransfer"
+  	action: ALLOW
+}
+
+rule BeneficiaryCanConfirmTransfer2 {
+  	description: "Beneficiary can update transfer status through ConfirmTransfer() transaction"
+  	participant (p): "org.hyperledger_composer.project.Beneficiary"
+  	operation: UPDATE
+  	resource (r): "org.hyperledger_composer.project.Transfer"
+  	transaction: "org.hyperledger_composer.project.ConfirmTransfer"
+  	condition: (p.getIdentifier() == r.fundEvent.beneficiary.getIdentifier())
+  	action: ALLOW
+}
+
+rule BeneficiaryCanConfirmTransfer3 {
+  	description: "Beneficiary can update fund event balance through ConfirmTransfer() transaction"
+  	participant (p): "org.hyperledger_composer.project.Beneficiary"
+  	operation: UPDATE
+  	resource (r): "org.hyperledger_composer.project.FundEvent"
+  	transaction: "org.hyperledger_composer.project.ConfirmTransfer"
+  	condition: (p.getIdentifier() == r.beneficiary.getIdentifier())
+  	action: ALLOW
+}
+
+rule BeneficiaryCanConfirmTransfer4 {
+  	description: "Beneficiary can update his own balance through ConfirmTransfer() transaction"
+  	participant (p): "org.hyperledger_composer.project.Beneficiary"
+  	operation: UPDATE
+  	resource (r): "org.hyperledger_composer.project.Beneficiary"
+  	transaction: "org.hyperledger_composer.project.ConfirmTransfer"
+  	condition: (p.getIdentifier() == r.getIdentifier())
+  	action: ALLOW
+}
+
+rule SystemACL {
+    description:  "System ACL to permit all access"
+    participant: "org.hyperledger.composer.system.Participant"
+    operation: ALL
+    resource: "org.hyperledger.composer.system.**"
+    action: ALLOW
+}
+
+rule NetworkAdminUser {
+    description: "Grant business network administrators full access to user resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "**"
+    action: ALLOW
+}
+
+rule NetworkAdminSystem {
+    description: "Grant business network administrators full access to system resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "org.hyperledger.composer.system.**"
+    action: ALLOW
+}
